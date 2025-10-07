@@ -10,7 +10,6 @@ app.use(express.json());
 // Inicializa o banco
 setupDatabase();
 
-// Exemplo de rota simples
 app.get('/', (req, res) => {
   res.json({ message: 'API rodando com SQLite!' });
 });
