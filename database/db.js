@@ -1,9 +1,14 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
+// database/db.js
+import sqlite3 from 'sqlite3';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Corrige "__dirname" que não existe em ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const dbPath = path.resolve(__dirname, 'database.sqlite');
 
-// Cria ou conecta ao banco de dados SQLite
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
     console.error('Erro ao conectar ao banco de dados:', err.message);
@@ -12,4 +17,6 @@ const db = new sqlite3.Database(dbPath, (err) => {
   }
 });
 
-module.exports = db;
+export default function getDbConnection() {
+  return db;
+}

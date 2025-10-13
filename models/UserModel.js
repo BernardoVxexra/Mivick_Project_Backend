@@ -1,4 +1,5 @@
-import { getDbConnection } from './database/db.js';
+import  getDbConnection  from '../database/db.js'
+
 
 export class UserModel {
     static async createUser(name, email, password) {

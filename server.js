@@ -1,20 +1,26 @@
-require('dotenv').config();
-const express = require('express');
-const setupDatabase = require('./config/schema');
-const db = require('./config/db');
+import dotenv from 'dotenv';
+import express from 'express';
+import {setupDatabase} from './database/schema.js';
+import db from './database/db.js';
+import userRoutes from './routes/userRoutes.js';
+
+dotenv.config();
+
 const app = express();
 const port = 3000;
 
-
+// Middleware
 app.use(express.json());
 
-// Inicializa o banco
-setupDatabase();
+// Inicializa o banco de dados
+setupDatabase(db);
 
+// Rotas
+app.use('/app/mivick/user', userRoutes);
 
-// Criar rotas
-
-
+app.get('/', (req, res) => {
+  res.json({ message: 'Servidor funcionando corretamente 🚀' });
+});
 
 
 app.listen(port, () => {

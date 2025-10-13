@@ -1,6 +1,9 @@
-const db = require('./db');
+import  getDbConnection  from './db.js';
 
-function setupDatabase() {
+export function setupDatabase() {
+  const db = getDbConnection();
+
+
   db.serialize(() => {
     db.run(`
       CREATE TABLE IF NOT EXISTS Cliente (
@@ -65,8 +68,6 @@ function setupDatabase() {
       );
     `);
 
-    console.log('Banco de dados configurado com sucesso!');
+    console.log('✅ Banco de dados configurado com sucesso!');
   });
 }
-
-module.exports = setupDatabase;

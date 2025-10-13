@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
-import jwt from 'jsomwebtoken';
-import { UserModel } from '../models/UserModel';
+import jwt from 'jsonwebtoken';
+import { UserModel } from '../models/UserModel.js';
 
 
 
@@ -52,3 +52,4 @@ export class AuthUser {
     }
 
 }
+
