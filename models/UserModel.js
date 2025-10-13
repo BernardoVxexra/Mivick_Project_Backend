@@ -19,4 +19,13 @@ export class UserModel {
         return db.get(`SELECT * FROM Cliente WHERE id_cliente = ?`, [id_cliente]);
     }
 
+    static async updateUser(id_cliente, {nome, telefone, email}) {
+        const db = await getDbConnection();
+        await db.run(
+            `UPDATE Cliente SET nome = ?, telefone = ?, email = ? WHERE id_cliente = ?`,
+            [nome, telefone, email, id_cliente] 
+        )
+    }
+
+
 }
