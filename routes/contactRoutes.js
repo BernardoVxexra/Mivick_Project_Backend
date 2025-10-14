@@ -1,5 +1,5 @@
 import express from 'express';
-import {ContactControlle } from '../controllers/ContactController.js';
+import {ContactController } from '../controllers/ContactController.js';
 import { authenticateToken } from '../middlewares/auth.js';
 
 const router = express.Router();

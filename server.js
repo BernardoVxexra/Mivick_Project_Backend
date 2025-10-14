@@ -21,6 +21,9 @@ app.get('/', (req, res) => {
 // Rotas de usuário
 app.use('/app/mivick/user', userRoutes);
 
+// Rotas de contato
+app.use('/app/mivick/contact', contactRoutes);
+
 // Inicializa o banco e depois inicia o servidor
 const startServer = async () => {
   try {
@@ -35,9 +38,6 @@ const startServer = async () => {
     process.exit(1); // encerra caso o DB falhe
   }
 };
-
-// Rotas de contato
-app.use('/app/mivick/contact', contactRoutes);
 
 
 startServer();

@@ -1,8 +1,8 @@
-import { ContactModel } from "../models/ContactModel";
+import { ContactModel } from "../models/ContactModel.js";
 
 export class ContactController {
     static async create(req, res){
-        const {nome, email , telefone} = req.body;
+        const {nome, email ,telefone} = req.body;
         const id_cliente = req.user.id_cliente
         await ContactModel.create({nome, email, telefone, id_cliente});
         res.status(201).json({
