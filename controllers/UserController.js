@@ -9,13 +9,19 @@ export class AuthUser {
     static async register (req, res){
         const { nome, telefone, email, senha} = req.body;
 
+        console.log('Verificando usuário existente:', email);
         const userExist = await UserModel.findByEmail(email);
+        console.log('Resultado do findByEmail:', userExist);
         if(userExist) return res.status(400).json({
             error: "Email já cadastrado"
         });
 
         const senhaHash = await bcrypt.hash(senha, 10);
         await UserModel.createUser({nome, telefone, email, senhaHash});
+
+        res.status(201).json({
+            message: "Usuário cadastrado com sucesso"
+        })
     }
 
     static async login(req, res){
