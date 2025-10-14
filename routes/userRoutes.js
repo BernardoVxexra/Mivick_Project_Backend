@@ -7,7 +7,7 @@ const router = express.Router();
 router.post('/register', AuthUser.register);
 router.post('/login', AuthUser.login);
 
-// 🔒 rota protegida
+//  rota protegida
 router.get('/profile', authenticateToken, AuthUser.profile);
 
 export default router;

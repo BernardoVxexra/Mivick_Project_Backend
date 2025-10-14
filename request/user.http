@@ -1,5 +1,6 @@
 ### Teste 1 - Criar usuário
-
+POST 
+Content-Type: application/json
 
 ### Teste 2 - Listar usuário
 

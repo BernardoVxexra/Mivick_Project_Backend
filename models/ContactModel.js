@@ -2,12 +2,18 @@ import { getDbConnection } from '../database/db.js';
 export class ContactModel {
     
     //Criar contato 
-   static async createContact({nome, telefone, email}){
+   static async createContact({nome, telefone, email, id_cliente}){
     const db = getDbConnection();
     await db.run(
-        'INSERT INTO Contato (nome, telefone, email) VALUES (?,?,?)',
-        [nome, telefone, email]
+        'INSERT INTO Contato (nome, telefone, email, id_cliente VALUES (?,?,?,?)',
+        [nome, telefone, email, id_cliente]
     );
+   }
+   
+   static async findAllByUser(id_cliente){
+     const db = await getDbConnection();
+     return await db.all('SELECT * FROM Contato WHERE id_cliente = ? ', [id_cliente]);
+     
    }
 
     static async findById(id_contato) {
