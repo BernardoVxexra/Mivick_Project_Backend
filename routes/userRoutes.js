@@ -1,15 +1,13 @@
 import express from 'express';
 import { AuthUser } from '../controllers/UserController.js';
+import { authenticateToken } from '../middlewares/auth.js';
 
 const router = express.Router();
 
-// Rota de cadastro
 router.post('/register', AuthUser.register);
-
-// Rota de login
 router.post('/login', AuthUser.login);
 
-// Rota de perfiç
-router.get('/profile', AuthUser.profile);
+// 🔒 rota protegida
+router.get('/profile', authenticateToken, AuthUser.profile);
 
 export default router;
