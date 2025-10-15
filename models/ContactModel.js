@@ -23,14 +23,14 @@ export class ContactModel {
   }
 
   static async updateContact(id_contato, {nome, telefone, email}){
-    const db = getDbConnection;
+    const db = await getDbConnection();
     const result = await db.run('UPDATE Contato SET nome = ?, telefone = ?, email = ? WHERE id_contato = ?', [nome, telefone, email, id_contato])
     return result;  
   }
   
   static async deleteContact(id_contato){
-    const db = getDbConnection();
-    const user = await db.run('DELETE FROM Contato WHERE id_contato = ? ', [id_contato])
+    const db = await getDbConnection();
+    const result = await db.run('DELETE FROM Contato WHERE id_contato = ? ', [id_contato])
     return result;
   }
 }
