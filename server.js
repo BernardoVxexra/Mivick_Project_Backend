@@ -3,6 +3,7 @@ import express from 'express';
 import { setupDatabase } from './database/schema.js';
 import userRoutes from './routes/userRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
+import iotRoutes from './routes/iotRoutes.js';
 
 
 
@@ -24,6 +25,8 @@ app.use('/app/mivick/user', userRoutes);
 // Rotas de contato
 app.use('/app/mivick/contact', contactRoutes);
 
+// Rotas de IoT
+app.use('/app/mivick/iot', iotRoutes);
 // Inicializa o banco e depois inicia o servidor
 const startServer = async () => {
   try {
