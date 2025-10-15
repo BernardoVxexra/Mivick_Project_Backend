@@ -3,9 +3,9 @@ export class ContactModel {
     
     //Criar contato 
    static async createContact({nome, telefone, email, id_cliente}){
-    const db = getDbConnection();
+    const db = await getDbConnection();
     await db.run(
-        'INSERT INTO Contato (nome, telefone, email, id_cliente VALUES (?,?,?,?)',
+        'INSERT INTO Contato (nome, telefone, email, id_cliente) VALUES (?,?,?,?)',
         [nome, telefone, email, id_cliente]
     );
    }
@@ -24,7 +24,7 @@ export class ContactModel {
 
   static async updateContact(id_contato, {nome, telefone, email}){
     const db = getDbConnection;
-    const result = await db.run('UPDATE Contato SET nome = ?, telefone = ? WHERE id_contato = ?', [nome, telefone, email, id_contato])
+    const result = await db.run('UPDATE Contato SET nome = ?, telefone = ?, email = ? WHERE id_contato = ?', [nome, telefone, email, id_contato])
     return result;  
   }
   

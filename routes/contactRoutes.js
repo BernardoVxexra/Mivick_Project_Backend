@@ -7,7 +7,7 @@ const router = express.Router();
 // Todas as rotas protegidas
 router.post('/', authenticateToken, ContactController.create);
 router.get('/', authenticateToken, ContactController.list);
-router.patch('/:id', authenticateToken, ContactController.update);
+router.put('/:id', authenticateToken, ContactController.update);
 router.delete('/:id', authenticateToken, ContactController.delete);
 
 export default router;
