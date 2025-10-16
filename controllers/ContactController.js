@@ -18,7 +18,7 @@ export class ContactController {
     }
 
     static async update(req,res) {
-        console.log(req.body); // 👈 veja o que realmente chega do Postman
+        console.log(req.body);
         const id_contato = req.params.id;
         const {nome, email, telefone} = req.body;
         await ContactModel.updateContact(id_contato, {nome, email , telefone});
