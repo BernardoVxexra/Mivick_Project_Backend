@@ -4,6 +4,7 @@ import { authenticateToken } from '../middlewares/auth.js';
 
 const router = express.Router();
 
-router.post('/iot/data', authenticateToken, IoTController.handleData);
+// Dispositivo IoT envia leitura (pode ser autenticado por token do dispositivo)
+router.post("/leituras", authenticateToken, IoTController.receiveData);
 
 export default router;
