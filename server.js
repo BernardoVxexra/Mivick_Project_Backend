@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import express from 'express';
+import twilio from "twilio";
 import { setupDatabase } from './database/schema.js';
 import userRoutes from './routes/userRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
@@ -7,6 +8,9 @@ import iotRoutes from './routes/iotRoutes.js';
 import { error } from './middlewares/error.js';
 
 dotenv.config();
+
+
+
 
 // - - - - - - - - - - - - - - - - - - - - - - - - 
 
@@ -34,6 +38,30 @@ app.use('/app/mivick/iot', iotRoutes);
 
 app.use(error);
 
+//  - - - - - - - - - - - - - - - - - - - - - - - - 
+
+const client = twilio(
+  process.env.TWILIO.ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN
+);
+
+// Rota de teste para enviar SMS
+app.post("/send-sms", async (req, res) => {
+  try {
+    const { to, message } = req.body;
+
+    const msg = await client.messages.create({
+      body: message,
+      from: process.env.TWILIO_PHONE_NUMBER,
+      to, // Exemplo: +5511999999999
+    });
+
+    res.json({ success: true, sid: msg.sid });
+  } catch (error) {
+    console.error("Erro ao enviar SMS:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
 
 // - - - - - - - - - - - - - - - - - - - - - - - - 
 
