@@ -10,6 +10,11 @@ export class ContactModel {
     );
    }
    
+   static async findAll(id_contato) {
+    const db = await getDbConnection();
+    const user = await db.all("SELECT * FROM Contato")
+    return user;
+   }
    static async findAllByUser(id_cliente){
      const db = await getDbConnection();
      return await db.all('SELECT * FROM Contato WHERE id_cliente = ? ', [id_cliente]);

@@ -14,7 +14,7 @@ router.post("/alerta", async (req, res) => {
     await IoTModel.createAlerta({ descricao, codigo, id_contato });
 
     // 2. Busca todos os contatos cadastrados
-    const contatos = await ContatoModel.findAllByUser();
+    const contatos = await ContatoModel.findAll();
 
     // 3. Envia alerta via Twilio
     for (const contato of contatos) {
