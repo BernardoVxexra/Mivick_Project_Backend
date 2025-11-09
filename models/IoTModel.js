@@ -1,4 +1,4 @@
-import { getDbConnection }  from "../database/db";
+import { getDbConnection }  from "../database/db.js";
 
 export class IoTModel {
     
