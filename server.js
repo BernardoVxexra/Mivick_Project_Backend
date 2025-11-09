@@ -13,9 +13,6 @@ import cors from 'cors';
 
 dotenv.config();
 
-
-
-
 // - - - - - - - - - - - - - - - - - - - - - - - - 
 
 
@@ -24,6 +21,12 @@ const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.json());
+
+app.use(cors({
+  origin: '*', // em produção, substitua pelo domínio do app
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
 app.get('/', (req, res) => {
   res.json({ message: 'Servidor funcionando corretamente ' });
