@@ -6,6 +6,10 @@ import userRoutes from './routes/userRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
 import iotRoutes from './routes/iotRoutes.js';
 import { error } from './middlewares/error.js';
+import authRoutes from './routes/authRoutes.js';
+import cors from 'cors';
+
+
 
 dotenv.config();
 
@@ -35,6 +39,10 @@ app.use('/app/mivick/contact', contactRoutes);
 
 // Rotas de IoT
 app.use('/app/mivick/iot', iotRoutes);
+
+// Rotas de autenticação (Google Sign-In)
+app.use('/app/mivick/auth', authRoutes);
+
 
 app.use(error);
 
