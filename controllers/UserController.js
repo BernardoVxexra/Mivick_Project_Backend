@@ -57,8 +57,11 @@ export class AuthUser {
     // Atualizar perfil
     static async update(req, res) {
         try {
-            const id_cliente = req.user.id_cliente; // pega do token
-            const { nome, email, telefone, foto } = req.body;
+            const id_cliente = req.user.id_cliente;
+            const { nome, email, telefone } = req.body;
+
+            // pega o nome do arquivo da imagem (caso tenha)
+            const foto = req.file ? `/uploads/${req.file.filename}` : req.body.foto;
 
             await UserModel.updateUser(id_cliente, { nome, email, telefone, foto });
             const updatedUser = await UserModel.findById(id_cliente);
@@ -69,4 +72,5 @@ export class AuthUser {
             res.status(500).json({ error: 'Falha ao atualizar usuário' });
         }
     }
+
 }
