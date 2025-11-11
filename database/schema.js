@@ -10,7 +10,7 @@ export async function setupDatabase() {
       telefone TEXT,
       email TEXT UNIQUE,
       senha TEXT NOT NULL,
-      foto TEXT DEFAULT
+      foto TEXT DEFAULT NULL
     );
   `);
 
