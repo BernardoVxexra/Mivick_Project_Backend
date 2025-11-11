@@ -52,6 +52,7 @@ export async function setupDatabase() {
       nome TEXT NOT NULL,
       telefone TEXT,
       email TEXT,
+      foto TEXT DEFAULT NULL,
       id_cliente INTEGER,
       FOREIGN KEY (id_cliente) REFERENCES Cliente(id_cliente)
     );
