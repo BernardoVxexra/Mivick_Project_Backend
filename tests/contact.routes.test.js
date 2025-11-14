@@ -2,7 +2,6 @@
 import { jest } from "@jest/globals";
 import request from "supertest";
 
-// 1) mock ContactModel
 jest.unstable_mockModule("../models/ContactModel.js", () => ({
   ContactModel: {
     createContact: jest.fn(),
@@ -12,7 +11,6 @@ jest.unstable_mockModule("../models/ContactModel.js", () => ({
   }
 }));
 
-// 2) mock do middleware auth (substitui auth real)
 jest.unstable_mockModule("../middlewares/auth.js", () => ({
   authenticateToken: (req, res, next) => {
     req.user = { id_cliente: 1 };
@@ -20,7 +18,7 @@ jest.unstable_mockModule("../middlewares/auth.js", () => ({
   }
 }));
 
-// 3) importar após mocks
+
 const { ContactModel } = await import("../models/ContactModel.js");
 const app = (await import("../app.js")).default;
 

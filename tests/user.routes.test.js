@@ -1,8 +1,6 @@
-// tests/user.routes.test.js
 import { jest } from "@jest/globals";
 import request from "supertest";
 
-// Mock do UserModel
 jest.unstable_mockModule("../models/UserModel.js", () => ({
   UserModel: {
     findById: jest.fn(),
@@ -11,7 +9,6 @@ jest.unstable_mockModule("../models/UserModel.js", () => ({
   }
 }));
 
-// Mock do middleware de autenticação
 jest.unstable_mockModule("../middlewares/auth.js", () => ({
   authenticateToken: (req, res, next) => {
     req.user = { id_cliente: 1 };
@@ -19,7 +16,6 @@ jest.unstable_mockModule("../middlewares/auth.js", () => ({
   }
 }));
 
-// Importações após os mocks
 const { UserModel } = await import("../models/UserModel.js");
 const app = (await import("../app.js")).default;
 
@@ -32,7 +28,6 @@ describe("User routes (Supertest)", () => {
 
   afterAll(() => jest.restoreAllMocks());
 
-  // --- TESTE DO GET PROFILE ---
   test("GET /app/mivick/user/profile - retorna o perfil do usuário", async () => {
     UserModel.findById.mockResolvedValue({
       id_cliente: 1,
@@ -47,7 +42,6 @@ describe("User routes (Supertest)", () => {
     expect(UserModel.findById).toHaveBeenCalledWith(1);
   });
 
-  // --- TESTE DO PUT UPDATE ---
   test("PUT /app/mivick/user - atualiza dados do usuário", async () => {
     UserModel.updateUser.mockResolvedValue(true);
 

@@ -2,7 +2,6 @@
 import { jest } from "@jest/globals";
 import request from "supertest";
 
-// 1) mockar modules usados pelos controllers BEFORE importing app
 jest.unstable_mockModule("../models/UserModel.js", () => ({
   UserModel: {
     findByEmail: jest.fn(),
@@ -20,13 +19,11 @@ jest.unstable_mockModule("jsonwebtoken", () => ({
   default: { sign: jest.fn() }
 }));
 
-// opcional: se seus controllers usam validators importados
 jest.unstable_mockModule("../utils/Validators/validators.js", () => ({
   validarEmail: jest.fn(),
   validarSenha: jest.fn()
 }));
 
-// 2) agora importar módulos (após mocks)
 const { UserModel } = await import("../models/UserModel.js");
 const bcrypt = (await import("bcrypt")).default;
 const jwt = (await import("jsonwebtoken")).default;
