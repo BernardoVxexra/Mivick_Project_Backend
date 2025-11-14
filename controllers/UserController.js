@@ -1,13 +1,24 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { UserModel } from '../models/UserModel.js';
+import { validarEmail, validarSenha } from '../utils/Validators/validators.js';
 
 export class AuthUser {
     // Cadastro 
     static async register(req, res) {
         const { nome, telefone, email, senha, foto } = req.body; // foto opcional
 
-        console.log('Verificando usuário existente:', email);
+        //Validação de e-mail
+        if (!validarEmail(email)) {
+            return res.status(400).json({ error: "E-mail inválido. Ex: usuario@email.com" });
+        }
+
+        // ➤ Validação de senha
+        if (!validarSenha(senha)) {
+            return res.status(400).json({
+                error: "Senha fraca. A senha deve conter no mínimo 8 caracteres, incluindo letra maiúscula, minúscula, número e caractere especial."
+            });
+        }
         const userExist = await UserModel.findByEmail(email);
         console.log('Resultado do findByEmail:', userExist);
         if (userExist) return res.status(400).json({
@@ -59,6 +70,10 @@ export class AuthUser {
         try {
             const id_cliente = req.user.id_cliente;
             const { nome, email, telefone } = req.body;
+
+            if (email && !validarEmail(email)) {
+                return res.status(400).json({ error: "E-mail inválido." });
+            }
 
             // pega o nome do arquivo da imagem (caso tenha)
             const foto = req.file ? `/uploads/${req.file.filename}` : req.body.foto;
