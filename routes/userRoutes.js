@@ -12,4 +12,7 @@ router.post('/login', AuthUser.login);
 router.get('/profile', authenticateToken, AuthUser.profile);
 router.put('/profile', authenticateToken, upload.single('foto'), AuthUser.update); 
 
+
 export default router;
+
+

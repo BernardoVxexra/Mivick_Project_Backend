@@ -1,5 +1,7 @@
 import { ContactModel } from "../models/ContactModel.js";
 
+
+// Criação do Controller de Contatos
 export class ContactController {
   static async create(req, res) {
     try {
@@ -15,6 +17,7 @@ export class ContactController {
     }
   }
 
+  // Listagem de contatos 
   static async list(req, res) {
     try {
       const id_cliente = req.user.id_cliente;
@@ -26,6 +29,7 @@ export class ContactController {
     }
   }
 
+  // Update COntatos
   static async update(req, res) {
     try {
       const id_contato = req.params.id;
@@ -40,6 +44,7 @@ export class ContactController {
     }
   }
 
+  // Deletar contatos
   static async delete(req, res) {
     try {
       const id_contato = req.params.id;
