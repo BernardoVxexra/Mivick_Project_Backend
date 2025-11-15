@@ -1,89 +1,94 @@
-import { IoTModel } from "../models/IoTModel.js";
 import { getCurrentDateTime } from "../utils/dateTime.js";
+import { IoTModel } from "../models/IoTModel.js";
 
 export class IoTController {
+static async registrarDispositivo(req, res) {
+  try {
+    const { nome } = req.body;
+    const id_cliente = req.user.id_cliente; // vem do token JWT
 
-  //  Dispositivo envia leitura
+    const db = await getDbConnection();
+
+    const result = await db.run(
+      `INSERT INTO Dispositivo (nome, condicao, id_cliente)
+       VALUES (?, 'ativo', ?)`,
+      [nome || "Meu dispositivo", id_cliente]
+    );
+
+    return res.json({
+      ok: true,
+      id_dispositivo: result.lastID
+    });
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Erro ao registrar dispositivo" });
+  }
+}
   static async receiveData(req, res) {
     try {
-      const { id_dispositivo, movimento, distancia, impacto, imageBase64 } = req.body;
-
-      if (!id_dispositivo) {
-        return res.status(400).json({ error: "ID do dispositivo é obrigatório" });
-      }
-
-      // Lógica MDI: sensores ativados?
-      const sensoresAtivos = [movimento, distancia, impacto].filter(Boolean).length;
-
-      let acidente_identificado = false;
-      let suspeita = false;
-
-      if (sensoresAtivos === 3) {
-        acidente_identificado = true;
-      } else if (sensoresAtivos === 2) {
-        suspeita = true;
-      }
-
-      // Cria registro da leitura
-      await IoTModel.createLeitura({
+      const {
         id_dispositivo,
         distancia,
         impacto,
-        movimentacao: movimento,
-        acidente_identificado
-      });
+        movimentacao,
+        acidente_identificado,
+        foto_base64,
+        ble_log,
+        wifi_ssid,
+        wifi_senha,
+        ws_log
+      } = req.body;
 
-      // Caso suspeita → salva imagem (foto de verificação)
-      if (suspeita && imageBase64) {
-        const buffer = Buffer.from(imageBase64, 'base64');
-        const data_hora = getCurrentDateTime();
+      if (!id_dispositivo)
+        return res.status(400).json({ error: "id_dispositivo é obrigatório" });
 
-        // Obtém a última leitura para vincular a foto
-        const leituras = await IoTModel.findLeiturasByDispositivo(id_dispositivo);
-        const ultimaLeitura = leituras[leituras.length - 1];
+      // SALVAR LOG BLE
+      if (ble_log) {
+        await IoTModel.saveBLELog({ mensagem: ble_log, id_dispositivo });
+      }
 
-        await IoTModel.createFoto({
-          imageBuffer: buffer,
-          data_hora,
-          id_leitura: ultimaLeitura.id_leitura
+      // SALVAR LOG WS
+      if (ws_log) {
+        await IoTModel.saveWSLog({ mensagem: ws_log, id_dispositivo });
+      }
+
+      // SALVAR ENVIO DE WI-FI
+      if (wifi_ssid && wifi_senha) {
+        await IoTModel.saveWifiEnvio({
+          ssid: wifi_ssid,
+          senha: wifi_senha,
+          id_dispositivo
         });
       }
 
-      // Caso acidente confirmado → cria alerta para os contatos
-      if (acidente_identificado) {
-        const descricao = "Acidente detectado pelo sistema MDI!";
-        const codigo = "ALR-" + Math.floor(100000 + Math.random() * 900000);
+      // SALVAR SENSOR
+      if (distancia || impacto || movimentacao !== undefined) {
+        await IoTModel.createLeitura({
+          id_dispositivo,
+          distancia,
+          impacto,
+          movimentacao,
+          acidente_identificado: !!acidente_identificado
+        });
 
-        // Busca todos os contatos do cliente dono do dispositivo
-        const dispositivos = await IoTModel.findDispositivosByCliente(req.user.id_cliente);
-        const dispositivo = dispositivos.find(d => d.id_dispositivo === id_dispositivo);
+        const leitura = await IoTModel.getLastLeitura(id_dispositivo);
 
-        if (dispositivo) {
-          const contatos = await IoTModel.findAlertasByClient(dispositivo.id_cliente);
-          for (const contato of contatos) {
-            await IoTModel.createAlerta({
-              descricao,
-              codigo,
-              id_contato: contato.id_contato
-            });
-
-            // (Testes) envio real de SMS ou push notification
-            console.log(`Alerta enviado para ${contato.nome}: ${descricao}`);
-          }
+        // SALVAR FOTO
+        if (foto_base64) {
+          const buffer = Buffer.from(foto_base64, "base64");
+          await IoTModel.createFoto({
+            imageBuffer: buffer,
+            id_leitura: leitura.id_leitura
+          });
         }
       }
 
-      res.status(201).json({
-        message: acidente_identificado
-          ? "Acidente confirmado! Alerta enviado."
-          : suspeita
-          ? "Atividade suspeita detectada — imagem salva para verificação."
-          : "Leitura registrada com sucesso."
-      });
+      return res.json({ ok: true });
 
-    } catch (err) {
-      console.error("Erro ao processar leitura:", err);
-      res.status(500).json({ error: "Erro interno ao processar leitura" });
+    } catch (e) {
+      console.log(e);
+      return res.status(500).json({ error: "Erro interno no servidor" });
     }
   }
 }

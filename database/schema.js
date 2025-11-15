@@ -14,16 +14,17 @@ export async function setupDatabase() {
     );
   `);
 
-  await db.exec(`
+    await db.exec(`
     CREATE TABLE IF NOT EXISTS Dispositivo (
       id_dispositivo INTEGER PRIMARY KEY AUTOINCREMENT,
+      nome TEXT,
       condicao TEXT,
       id_cliente INTEGER,
       FOREIGN KEY (id_cliente) REFERENCES Cliente(id_cliente)
     );
   `);
 
-  await db.exec(`
+ await db.exec(`
     CREATE TABLE IF NOT EXISTS Leitura (
       id_leitura INTEGER PRIMARY KEY AUTOINCREMENT,
       data_hora TEXT,
@@ -43,6 +44,37 @@ export async function setupDatabase() {
       data_hora TEXT,
       id_leitura INTEGER,
       FOREIGN KEY (id_leitura) REFERENCES Leitura(id_leitura)
+    );
+  `);
+
+   await db.exec(`
+    CREATE TABLE IF NOT EXISTS LogBLE (
+      id_log INTEGER PRIMARY KEY AUTOINCREMENT,
+      mensagem TEXT,
+      data_hora TEXT,
+      id_dispositivo INTEGER,
+      FOREIGN KEY (id_dispositivo) REFERENCES Dispositivo(id_dispositivo)
+    );
+  `);
+
+   await db.exec(`
+    CREATE TABLE IF NOT EXISTS LogWS (
+      id_log INTEGER PRIMARY KEY AUTOINCREMENT,
+      mensagem TEXT,
+      data_hora TEXT,
+      id_dispositivo INTEGER,
+      FOREIGN KEY (id_dispositivo) REFERENCES Dispositivo(id_dispositivo)
+    );
+  `);
+
+    await db.exec(`
+    CREATE TABLE IF NOT EXISTS WifiEnvio (
+      id_envio INTEGER PRIMARY KEY AUTOINCREMENT,
+      ssid TEXT,
+      senha TEXT,
+      data_hora TEXT,
+      id_dispositivo INTEGER,
+      FOREIGN KEY (id_dispositivo) REFERENCES Dispositivo(id_dispositivo)
     );
   `);
 
@@ -70,3 +102,5 @@ export async function setupDatabase() {
 
   console.log('✅ Banco de dados configurado com sucesso!');
 }
+
+
