@@ -1,73 +1,53 @@
-import { getDbConnection }  from "../database/db.js";
+import { getDbConnection } from "../database/db.js";
 
 export class IoTModel {
-    
-    // Método criar dispositivo (Vinculado a um cliente)
-    static async createDispositivo({nome, id_cliente}) {
-        const db = await getDbConnection();
-        await db.run(
-            'INSERT INTO Dispositivo (nome, id_cliente) VALUES (?, ?)',
-            [nome, id_cliente]
-        );
-    }
 
-    // Buscar todos os dispositivos de um cliente
-    static async findDispositivosByCliente(id_cliente){
-        const db = await getDbConnection();
-        return await db.all('SELECT * FROM Dispositivo WHERE id_cliente = ?', [id_cliente]);
-    }
-
-     static async updateDevice(id_dispositivo, condicao) {
-     const db = await getDbConnection();
-     await db.run('UPDATE Dispositivo SET condicao = ? WHERE id_dispositivo = ?', [condicao, id_dispositivo]);
-  }
-
-  //Registra nova leitura do sensor 
-
-  static async createLeitura({id_dispositivo, distancia, impacto, movimentacao, acidente_identificado}){
+  static async createLeitura({ id_dispositivo, distancia, impacto, movimentacao, acidente_identificado }) {
     const db = await getDbConnection();
-    await db.run(
-      'INSERT INTO Leitura (id_dispositivo, distancia, impacto, movimentacao, acidente_identificado) VALUES (?, ?, ?, ?, ?)',
-      [id_dispositivo, distancia, impacto, movimentacao, acidente_identificado]
-    );
+    await db.run(`
+      INSERT INTO Leitura (data_hora, distancia, impacto, movimentacao, acidente_identificado, id_dispositivo)
+      VALUES (datetime('now'), ?, ?, ?, ?, ?)
+    `, [distancia, impacto, movimentacao, acidente_identificado, id_dispositivo]);
   }
 
-  // Para buscar todas as leituras de um dispositivo
-
-  static async findLeiturasByDispositivo(id_dispositivo){
-    const db = await getDbConnection();
-    return await db.all('SELECT * FROM Leitura WHERE id_dispositivo = ?', [id_dispositivo]);
-
-  }
-
-
-  // Criando os alertas 
-
-  static async createAlerta({descricao, codigo, id_contato}){
-    const db = await getDbConnection();
-    await db.run(
-      'INSERT INTO Alerta (descricao, codigo, id_contato) VALUES (?, ?, ?)',
-      [descricao, codigo, id_contato]
-    );
-  }
-
- static async createFoto({ imageBuffer, data_hora, id_leitura }) {
+  static async createFoto({ imageBuffer, id_leitura }) {
     const db = await getDbConnection();
     await db.run(`
       INSERT INTO Foto (image, data_hora, id_leitura)
-      VALUES (?, ?, ?)
-    `, [imageBuffer, data_hora, id_leitura]);
+      VALUES (?, datetime('now'), ?)
+    `, [imageBuffer, id_leitura]);
   }
 
-
-   // Busca todos os alertas de um cliente (via join com contatos)
-  static async findAlertasByClient(id_cliente) {
+  static async saveBLELog({ mensagem, id_dispositivo }) {
     const db = await getDbConnection();
-    return await db.all(`
-      SELECT a.id_alerta, a.descricao, a.codigo, c.nome AS contato_nome, c.email, c.telefone
-      FROM Alerta a
-      JOIN Contato c ON a.id_contato = c.id_contato
-      WHERE c.id_cliente = ?
-    `, [id_cliente]);
+    await db.run(`
+      INSERT INTO LogBLE (mensagem, data_hora, id_dispositivo)
+      VALUES (?, datetime('now'), ?)
+    `, [mensagem, id_dispositivo]);
+  }
+
+  static async saveWSLog({ mensagem, id_dispositivo }) {
+    const db = await getDbConnection();
+    await db.run(`
+      INSERT INTO LogWS (mensagem, data_hora, id_dispositivo)
+      VALUES (?, datetime('now'), ?)
+    `, [mensagem, id_dispositivo]);
+  }
+
+  static async saveWifiEnvio({ ssid, senha, id_dispositivo }) {
+    const db = await getDbConnection();
+    await db.run(`
+      INSERT INTO WifiEnvio (ssid, senha, data_hora, id_dispositivo)
+      VALUES (?, ?, datetime('now'), ?)
+    `, [ssid, senha, id_dispositivo]);
+  }
+
+  static async getLastLeitura(id_dispositivo) {
+    const db = await getDbConnection();
+    return db.get(`
+      SELECT * FROM Leitura
+      WHERE id_dispositivo = ?
+      ORDER BY id_leitura DESC LIMIT 1
+    `, [id_dispositivo]);
   }
 }
