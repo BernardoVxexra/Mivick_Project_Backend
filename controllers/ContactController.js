@@ -29,7 +29,7 @@ export class ContactController {
     }
   }
 
-  // Update COntatos
+  // Update Contatos
   static async update(req, res) {
     try {
       const id_contato = req.params.id;
