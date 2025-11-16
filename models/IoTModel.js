@@ -35,12 +35,27 @@ export class IoTModel {
   }
 
   static async saveWifiEnvio({ ssid, senha, id_dispositivo }) {
-    const db = await getDbConnection();
-    await db.run(`
-      INSERT INTO WifiEnvio (ssid, senha, data_hora, id_dispositivo)
-      VALUES (?, ?, datetime('now'), ?)
-    `, [ssid, senha, id_dispositivo]);
+  const db = await getDbConnection();
+
+  // VERIFICAR SE JÁ EXISTE
+  const existe = await db.get(
+    `SELECT id_envio FROM WifiEnvio
+     WHERE ssid = ? AND senha = ? AND id_dispositivo = ?`,
+    [ssid, senha, id_dispositivo]
+  );
+
+  if (existe) {
+    console.log("⚠️ Wi-Fi já existe, não salvando novamente.");
+    return;
   }
+
+  // SALVAR SE NÃO EXISTE
+  await db.run(
+    `INSERT INTO WifiEnvio (ssid, senha, data_hora, id_dispositivo)
+     VALUES (?, ?, datetime('now'), ?)`,
+    [ssid, senha, id_dispositivo]
+  );
+}
 
   static async getLastLeitura(id_dispositivo) {
     const db = await getDbConnection();
@@ -50,4 +65,12 @@ export class IoTModel {
       ORDER BY id_leitura DESC LIMIT 1
     `, [id_dispositivo]);
   }
+  static async getWifiList(id_dispositivo) {
+  const db = await getDbConnection();
+  return db.all(
+    "SELECT ssid, senha FROM WifiEnvio WHERE id_dispositivo = ? ORDER BY id_envio DESC LIMIT 5",
+    [id_dispositivo]
+  );
+}
+
 }
