@@ -46,6 +46,9 @@ app.use('/app/mivick/iot', iotRoutes);
 // Rotas de autenticação (Google Sign-In)
 app.use('/app/mivick/auth', authRoutes);
 
+app.use('/uploads', express.static('uploads'));
+
+
 
 app.use(error);
 

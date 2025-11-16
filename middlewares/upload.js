@@ -4,7 +4,7 @@ import path from 'path';
 import fs from 'fs';
 
 // Garante que a pasta existe
-const uploadDir = path.resolve('uploads/contatos');
+const uploadDir = path.resolve('uploads');
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
