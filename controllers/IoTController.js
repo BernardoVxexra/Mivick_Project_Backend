@@ -1,5 +1,6 @@
 import { getCurrentDateTime } from "../utils/dateTime.js";
 import { IoTModel } from "../models/IoTModel.js";
+import { getDbConnection } from "../database/db.js";
 
 export class IoTController {
 static async registrarDispositivo(req, res) {
@@ -25,6 +26,7 @@ static async registrarDispositivo(req, res) {
     res.status(500).json({ error: "Erro ao registrar dispositivo" });
   }
 }
+
   static async receiveData(req, res) {
     try {
       const {
@@ -91,4 +93,16 @@ static async registrarDispositivo(req, res) {
       return res.status(500).json({ error: "Erro interno no servidor" });
     }
   }
+  
+  static async listarWifi(req, res) {
+  try {
+    const { id_dispositivo } = req.params;
+    const wifiList = await IoTModel.getWifiList(id_dispositivo);
+    return res.json({ ok: true, lista: wifiList });
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({ ok: false, error: "Erro ao listar Wi-Fi" });
+  }
+}
+
 }
