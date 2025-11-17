@@ -7,7 +7,7 @@ export class ContactModel {
     const db = await getDbConnection();
     await db.run(
       'INSERT INTO Contato (nome, telefone, email, foto, id_cliente) VALUES (?, ?, ?, ?, ?)',
-      [nome, telefone, email, foto || null, id_cliente]
+      [nome, telefone, email, foto, id_cliente]
     );
   }
 
@@ -30,7 +30,7 @@ export class ContactModel {
     const db = await getDbConnection();
     const result = await db.run(
       'UPDATE Contato SET nome = ?, telefone = ?, email = ?, foto = ? WHERE id_contato = ?',
-      [nome, telefone, email, foto || null, id_contato]
+      [nome, telefone, email, foto, id_contato]
     );
     return result;
   }

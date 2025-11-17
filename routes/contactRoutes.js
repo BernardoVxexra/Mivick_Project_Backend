@@ -1,13 +1,27 @@
 import express from 'express';
-import {ContactController } from '../controllers/ContactController.js';
+import { ContactController } from '../controllers/ContactController.js';
 import { authenticateToken } from '../middlewares/auth.js';
+import { upload } from '../middlewares/upload.js';
 
 const router = express.Router();
 
-// Todas as rotas protegidas
-router.post('/', authenticateToken, ContactController.create);
+// Criar contato com foto
+router.post(
+    '/',
+    authenticateToken,
+    upload.single('foto'),
+    ContactController.create
+);
+
+// Atualizar contato com foto
+router.put(
+    '/:id',
+    authenticateToken,
+    upload.single('foto'),
+    ContactController.update
+);
+
 router.get('/', authenticateToken, ContactController.list);
-router.put('/:id', authenticateToken, ContactController.update);
 router.delete('/:id', authenticateToken, ContactController.delete);
 
 export default router;
