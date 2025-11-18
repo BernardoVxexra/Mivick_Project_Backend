@@ -38,6 +38,8 @@ export class ContactController {
     }
   }
 
+  
+
   static async getOne(req, res) {
   try {
     const id_contato = req.params.id;
