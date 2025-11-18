@@ -13,6 +13,13 @@ router.post(
     ContactController.create
 );
 
+// Listar contatos do usuário logado
+router.get(
+    '/',
+    authenticateToken,
+    ContactController.list
+);
+
 // Atualizar contato com foto
 router.put(
     '/:id',
@@ -21,7 +28,11 @@ router.put(
     ContactController.update
 );
 
-router.get('/', authenticateToken, ContactController.list);
-router.delete('/:id', authenticateToken, ContactController.delete);
+// Deletar contato
+router.delete(
+    '/:id',
+    authenticateToken,
+    ContactController.delete
+);
 
 export default router;

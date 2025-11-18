@@ -28,12 +28,22 @@ export class ContactModel {
 
   static async updateContact(id_contato, { nome, telefone, email, foto }) {
     const db = await getDbConnection();
-    const result = await db.run(
-      'UPDATE Contato SET nome = ?, telefone = ?, email = ?, foto = ? WHERE id_contato = ?',
-      [nome, telefone, email, foto, id_contato]
+
+    // Se uma nova foto foi enviada, atualize tudo
+    if (foto !== undefined) {
+      return await db.run(
+        'UPDATE Contato SET nome = ?, telefone = ?, email = ?, foto = ? WHERE id_contato = ?',
+        [nome, telefone, email, foto, id_contato]
+      );
+    }
+
+    // Caso contrário, não mexa na foto
+    return await db.run(
+      'UPDATE Contato SET nome = ?, telefone = ?, email = ? WHERE id_contato = ?',
+      [nome, telefone, email, id_contato]
     );
-    return result;
   }
+
 
   static async deleteContact(id_contato) {
     const db = await getDbConnection();

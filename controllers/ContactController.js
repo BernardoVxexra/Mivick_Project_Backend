@@ -8,7 +8,6 @@ export class ContactController {
       const { nome, email, telefone } = req.body;
       const id_cliente = req.user.id_cliente;
 
-      // Foto enviada pelo multer
       const foto = req.file ? `/uploads/${req.file.filename}` : null;
 
       await ContactModel.createContact({
@@ -45,13 +44,15 @@ export class ContactController {
       const id_contato = req.params.id;
       const { nome, email, telefone } = req.body;
 
-      // Se o usuário enviar nova foto
-      const foto = req.file ? `/uploads/${req.file.filename}` : null;
+      // Foto somente se realmente houver upload
+      const novaFoto = req.file ? `/uploads/${req.file.filename}` : undefined;
 
-      await ContactModel.updateContact(
-        id_contato,
-        { nome, email, telefone, foto }
-      );
+      await ContactModel.updateContact(id_contato, {
+        nome,
+        email,
+        telefone,
+        foto: novaFoto
+      });
 
       res.json({ message: "Contato atualizado com sucesso" });
 
@@ -61,7 +62,6 @@ export class ContactController {
     }
   }
 
-  // Deletar contato
   static async delete(req, res) {
     try {
       const id_contato = req.params.id;
