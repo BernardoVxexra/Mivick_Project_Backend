@@ -38,6 +38,23 @@ export class ContactController {
     }
   }
 
+  static async getOne(req, res) {
+  try {
+    const id_contato = req.params.id;
+    const contact = await ContactModel.findById(id_contato);
+
+    if (!contact) {
+      return res.status(404).json({ error: "Contato não encontrado" });
+    }
+
+    res.json({ contact });
+  } catch (error) {
+    console.error("Erro ao buscar contato:", error);
+    res.status(500).json({ error: "Erro interno ao buscar contato" });
+  }
+}
+
+
   // Atualizar contato
   static async update(req, res) {
     try {

@@ -35,5 +35,12 @@ router.delete(
     ContactController.delete
 );
 
+router.get(
+  '/:id',
+  authenticateToken,
+  ContactController.getOne
+);
+
+
 
 export default router;
