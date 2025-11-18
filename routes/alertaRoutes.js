@@ -1,31 +1,10 @@
-// routes/alerta.js
+// routes/alertaRoutes.js
 import express from "express";
-import IoTModel from "../models/IoTModel.js";
-import ContactModel from "../models/ContactModel.js";
-import { sendWhatsAppAlert } from "../utils/twilioService.js";
+import { AlertaController } from "../controllers/AlertaController.js";
+import { authenticateToken } from "../middlewares/auth.js";
 
 const router = express.Router();
 
-router.post("/alerta", async (req, res) => {
-  try {
-    const { descricao, codigo, id_contato } = req.body;
-
-    // 1. Cria o alerta no banco
-    await IoTModel.createAlerta({ descricao, codigo, id_contato });
-
-    // 2. Busca todos os contatos cadastrados
-    const contatos = await ContatoModel.findAll();
-
-    // 3. Envia alerta via Twilio
-    for (const contato of contatos) {
-      await sendWhatsAppAlert(contato.telefone, descricao);
-    }
-
-    res.json({ success: true, message: "Alerta criado e mensagens enviadas!" });
-  } catch (error) {
-    console.error("Erro ao criar alerta:", error);
-    res.status(500).json({ success: false, error: error.message });
-  }
-});
+router.post("/enviar", authenticateToken, AlertaController.enviarAlerta);
 
 export default router;
