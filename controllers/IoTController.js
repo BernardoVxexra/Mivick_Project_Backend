@@ -104,5 +104,58 @@ static async registrarDispositivo(req, res) {
     return res.status(500).json({ ok: false, error: "Erro ao listar Wi-Fi" });
   }
 }
+static async historicoCompleto(req, res) {
+  try {
+    const { id_dispositivo } = req.params;
+    const db = await getDbConnection();
+
+    // Última leitura + foto
+    const leitura = await db.get(
+      `SELECT * FROM Leitura WHERE id_dispositivo = ? ORDER BY id_leitura DESC LIMIT 1`,
+      [id_dispositivo]
+    );
+
+    let foto = null;
+    if (leitura) {
+      foto = await db.get(
+        `SELECT image FROM Foto WHERE id_leitura = ? ORDER BY id_image DESC LIMIT 1`,
+        [leitura.id_leitura]
+      );
+    }
+
+    // Logs BLE
+    const logsBLE = await db.all(
+      `SELECT * FROM LogBLE WHERE id_dispositivo = ? ORDER BY id_log DESC LIMIT 20`,
+      [id_dispositivo]
+    );
+
+    // Logs WS
+    const logsWS = await db.all(
+      `SELECT * FROM LogWS WHERE id_dispositivo = ? ORDER BY id_log DESC LIMIT 20`,
+      [id_dispositivo]
+    );
+
+    // Último alerta
+    const alerta = await db.get(
+      `SELECT A.*, C.nome AS contato_nome, C.telefone AS contato_telefone
+       FROM Alerta A 
+       LEFT JOIN Contato C ON C.id_contato = A.id_contato
+       ORDER BY id_alerta DESC LIMIT 1`
+    );
+
+    return res.json({
+      ok: true,
+      leitura,
+      foto: foto ? foto.image.toString("base64") : null,
+      logsBLE,
+      logsWS,
+      alerta
+    });
+
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({ ok: false, error: "Erro no histórico" });
+  }
+}
 
 }
