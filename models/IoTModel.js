@@ -104,6 +104,14 @@ static async getContatosByCliente(id_cliente) {
     [id_cliente]
   );
 }
+static async saveVeiculoDetectado({ id_leitura, id_alerta, qtd_veiculos }) {
+  const db = await getDbConnection();
+  const res = await db.run(`
+    INSERT INTO VeiculoDetectado (id_leitura, id_alerta, qtd_veiculos, data_hora)
+    VALUES (?, ?, ?, datetime('now','localtime'))
+  `, [id_leitura || null, id_alerta || null, qtd_veiculos]);
 
+  return res.lastID;
+}
 
 }
