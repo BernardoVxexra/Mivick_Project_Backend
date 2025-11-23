@@ -103,6 +103,17 @@ export async function setupDatabase() {
 );
 
   `);
+await db.exec(`
+  CREATE TABLE IF NOT EXISTS VeiculoDetectado (
+    id_detect INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_leitura INTEGER,
+    id_alerta INTEGER,
+    qtd_veiculos INTEGER,
+    data_hora TEXT,
+    FOREIGN KEY (id_leitura) REFERENCES Leitura(id_leitura),
+    FOREIGN KEY (id_alerta) REFERENCES Alerta(id_alerta)
+  );
+`);
 
   console.log('✅ Banco de dados configurado com sucesso!');
 }

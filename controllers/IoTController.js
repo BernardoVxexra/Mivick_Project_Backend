@@ -1,6 +1,7 @@
 import { getCurrentDateTime } from "../utils/dateTime.js";
 import { IoTModel } from "../models/IoTModel.js";
 import { getDbConnection } from "../database/db.js";
+import { detectarVeiculosBuffer } from "../services/detectarVeiculos.js";
 
 export class IoTController {
   static async registrarDispositivo(req, res) {
@@ -79,10 +80,35 @@ export class IoTController {
       }
 
       // 3) Salvar foto (se houver) ligada à leitura criada/acessível
-      if (foto_base64 && id_leitura) {
-        const buffer = Buffer.from(foto_base64, "base64");
-        await IoTModel.createFoto({ imageBuffer: buffer, id_leitura });
-      }
+     if (foto_base64 && id_leitura) {
+
+  const buffer = Buffer.from(foto_base64, "base64");
+  const id_foto = await IoTModel.createFoto({ imageBuffer: buffer, id_leitura });
+
+  // 🔍 chama detector e obtém quantidade
+  const qtd = await detectarVeiculosBuffer(buffer);
+
+  // se existe alerta e for acidente, vincula no alerta
+  let id_alerta_atual = null;
+
+  const alertaAtual = await db.get(`
+    SELECT id_alerta FROM Alerta
+    WHERE id_leitura = ?
+    ORDER BY id_alerta DESC LIMIT 1
+  `, [id_leitura]);
+
+  if (alertaAtual) id_alerta_atual = alertaAtual.id_alerta;
+
+  // 💾 salva o resultado
+  await IoTModel.saveVeiculoDetectado({
+    id_leitura,
+    id_alerta: id_alerta_atual,
+    qtd_veiculos: qtd
+  });
+
+  console.log("🚗 Análise concluída, veículos detectados:", qtd);
+}
+
 
       // 4) Criar alerta (se for acidente_identificado ou se movimentacao for explicitamente um ALERTA)
       // DEDUP: evita criar múltiplos alertas iguais num curto intervalo
