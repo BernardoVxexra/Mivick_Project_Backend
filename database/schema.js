@@ -30,7 +30,7 @@ export async function setupDatabase() {
       data_hora TEXT,
       distancia REAL,
       impacto REAL,
-      movimentacao REAL,
+      movimentacao TEXT,
       acidente_identificado BOOLEAN,
       id_dispositivo INTEGER,
       FOREIGN KEY (id_dispositivo) REFERENCES Dispositivo(id_dispositivo)
@@ -92,12 +92,16 @@ export async function setupDatabase() {
 
   await db.exec(`
     CREATE TABLE IF NOT EXISTS Alerta (
-      id_alerta INTEGER PRIMARY KEY AUTOINCREMENT,
-      descricao TEXT,
-      codigo TEXT,
-      id_contato INTEGER,
-      FOREIGN KEY (id_contato) REFERENCES Contato(id_contato)
-    );
+  id_alerta INTEGER PRIMARY KEY AUTOINCREMENT,
+  descricao TEXT,
+  codigo TEXT,
+  data_hora TEXT,
+  id_contato INTEGER,
+  id_leitura INTEGER,
+  FOREIGN KEY (id_contato) REFERENCES Contato(id_contato)
+  -- note: constraint FK para id_leitura pode ser adicionada se recriar tabela
+);
+
   `);
 
   console.log('✅ Banco de dados configurado com sucesso!');

@@ -2,27 +2,30 @@ import { getDbConnection } from "../database/db.js";
 
 export class IoTModel {
 
-  static async createLeitura({ id_dispositivo, distancia, impacto, movimentacao, acidente_identificado }) {
-    const db = await getDbConnection();
-    await db.run(`
-      INSERT INTO Leitura (data_hora, distancia, impacto, movimentacao, acidente_identificado, id_dispositivo)
-      VALUES (datetime('now'), ?, ?, ?, ?, ?)
-    `, [distancia, impacto, movimentacao, acidente_identificado, id_dispositivo]);
-  }
+ static async createLeitura({ id_dispositivo, distancia, impacto, movimentacao, acidente_identificado }) {
+  const db = await getDbConnection();
+  const res = await db.run(`
+    INSERT INTO Leitura (data_hora, distancia, impacto, movimentacao, acidente_identificado, id_dispositivo)
+    VALUES (datetime('now','localtime'), ?, ?, ?, ?, ?)
+  `, [distancia, impacto, movimentacao, acidente_identificado, id_dispositivo]);
 
-  static async createFoto({ imageBuffer, id_leitura }) {
-    const db = await getDbConnection();
-    await db.run(`
-      INSERT INTO Foto (image, data_hora, id_leitura)
-      VALUES (?, datetime('now'), ?)
-    `, [imageBuffer, id_leitura]);
-  }
+  return res.lastID;
+}
+
+static async createFoto({ imageBuffer, id_leitura }) {
+  const db = await getDbConnection();
+  const res = await db.run(`
+    INSERT INTO Foto (image, data_hora, id_leitura)
+    VALUES (?, datetime('now','localtime'), ?)
+  `, [imageBuffer, id_leitura]);
+  return res.lastID;
+}
 
   static async saveBLELog({ mensagem, id_dispositivo }) {
     const db = await getDbConnection();
     await db.run(`
       INSERT INTO LogBLE (mensagem, data_hora, id_dispositivo)
-      VALUES (?, datetime('now'), ?)
+      VALUES (?, datetime('now','localtime'), ?)
     `, [mensagem, id_dispositivo]);
   }
 
@@ -30,7 +33,7 @@ export class IoTModel {
     const db = await getDbConnection();
     await db.run(`
       INSERT INTO LogWS (mensagem, data_hora, id_dispositivo)
-      VALUES (?, datetime('now'), ?)
+      VALUES (?, datetime('now','localtime'), ?)
     `, [mensagem, id_dispositivo]);
   }
 
@@ -51,10 +54,11 @@ export class IoTModel {
 
   // SALVAR SE NÃO EXISTE
   await db.run(
-    `INSERT INTO WifiEnvio (ssid, senha, data_hora, id_dispositivo)
-     VALUES (?, ?, datetime('now'), ?)`,
-    [ssid, senha, id_dispositivo]
-  );
+  `INSERT INTO WifiEnvio (ssid, senha, data_hora, id_dispositivo)
+   VALUES (?, ?, datetime('now','localtime'), ?)`,
+  [ssid, senha, id_dispositivo]
+);
+
 }
 
   static async getLastLeitura(id_dispositivo) {
@@ -72,6 +76,15 @@ export class IoTModel {
     [id_dispositivo]
   );
 }
+// cria alerta referenciando uma leitura (opcional id_leitura)
+  static async createAlerta({ descricao, codigo, id_contato = null, id_leitura = null }) {
+    const db = await getDbConnection();
+    const res = await db.run(`
+      INSERT INTO Alerta (descricao, codigo, data_hora, id_contato, id_leitura)
+      VALUES (?, ?, datetime('now','localtime'), ?, ?)
+    `, [descricao, codigo, id_contato, id_leitura]);
+    return res.lastID;
+  }
 
  // Criar alerta
 static async createAlerta({ descricao, codigo, id_contato }) {
