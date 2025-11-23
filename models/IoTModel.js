@@ -113,5 +113,16 @@ static async saveVeiculoDetectado({ id_leitura, id_alerta, qtd_veiculos }) {
 
   return res.lastID;
 }
+static async getUltimoAlerta(id_dispositivo) {
+  const db = await getDbConnection();
+  return db.get(`
+    SELECT A.data_hora
+    FROM Alerta A
+    JOIN Leitura L ON L.id_leitura = A.id_leitura
+    WHERE L.id_dispositivo = ?
+    ORDER BY A.id_alerta DESC
+    LIMIT 1
+  `, [id_dispositivo]);
+}
 
 }

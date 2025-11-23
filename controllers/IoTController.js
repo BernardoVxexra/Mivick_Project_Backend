@@ -269,4 +269,25 @@ if (leituraComFoto) {
       res.status(500).json({ ok: false, error: "Erro no histórico" });
     }
   }
+  static async ultimoAlerta(req, res) {
+  try {
+    const { id_dispositivo } = req.params;
+
+    const alerta = await IoTModel.getUltimoAlerta(id_dispositivo);
+
+    if (!alerta) {
+      return res.json({ ok: false, msg: "nenhum alerta encontrado" });
+    }
+
+    return res.json({
+      ok: true,
+      datahora: alerta.data_hora
+    });
+
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({ ok: false, error: "erro no servidor" });
+  }
+}
+
 }

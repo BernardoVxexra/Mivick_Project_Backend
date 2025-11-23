@@ -8,5 +8,6 @@ router.post("/leituras", authenticateToken, IoTController.receiveData);
 router.post("/registrar-dispositivo", authenticateToken, IoTController.registrarDispositivo);
 router.get("/wifi/:id_dispositivo", authenticateToken, IoTController.listarWifi);
 router.get("/historico/:id_dispositivo", IoTController.historicoCompleto);
+router.get("/ultimo-alerta/:id_dispositivo", authenticateToken, IoTController.ultimoAlerta);
 
 export default router;
