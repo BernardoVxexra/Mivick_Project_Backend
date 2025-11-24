@@ -1,6 +1,6 @@
 // controllers/AlertaController.js
 import { IoTModel } from "../models/IoTModel.js";
-import { sendWhatsAppAlert } from "../utils/send_whatsapp.js";
+import { sendWhatsAppAlert } from "../services/send_whatsapp.js";
 import { getDbConnection } from "../database/db.js";
 
 export class AlertaController {
@@ -27,11 +27,12 @@ export class AlertaController {
       for (const contato of contatos) {
         await IoTModel.createAlerta({ descricao, codigo, id_contato: contato.id_contato });
         await sendWhatsAppAlert(contato.telefone, {
-          descricao: "",
-          dispositivo: "",
-          distancia: 2.5,
-          impacto: 7.8,
-          movimentacao: 0.0
+         id_dispositivo,
+         descricao,
+         dispositivo: contato.nome_dispositivo,
+         distancia: contato.distancia,
+         impacto: contato.impacto,
+         movimentacao: contato.movimentacao
         });
       }
 

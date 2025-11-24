@@ -120,7 +120,7 @@ export class IoTController {
 
         // buscar contato padrão do cliente (se houver)
         const contato = await db.get(`
-          SELECT id_contato FROM Contato
+          SELECT id_contato, telefone FROM Contato
           WHERE id_cliente = (SELECT id_cliente FROM Dispositivo WHERE id_dispositivo = ?)
           LIMIT 1
         `, [id_dispositivo]);
@@ -176,9 +176,13 @@ if (leituraComFoto) {
             codigo,
             id_contato,
             id_leitura: id_leitura ?? null
+
+          
           });
         }
       }
+
+      
 
       return res.json({ ok: true });
     } catch (e) {
@@ -186,6 +190,8 @@ if (leituraComFoto) {
       return res.status(500).json({ error: "Erro interno no servidor" });
     }
   }
+
+  
 
   static async listarWifi(req, res) {
     try {
