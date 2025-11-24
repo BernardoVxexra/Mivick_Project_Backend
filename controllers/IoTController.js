@@ -2,6 +2,7 @@ import { getCurrentDateTime } from "../utils/dateTime.js";
 import { IoTModel } from "../models/IoTModel.js";
 import { getDbConnection } from "../database/db.js";
 import { detectarVeiculosBuffer } from "../services/detectarVeiculos.js";
+import { sendSMS } from "../services/send_whatsapp.js";
 
 export class IoTController {
   static async registrarDispositivo(req, res) {
@@ -53,8 +54,8 @@ export class IoTController {
 
       // 1) Se vier dados de sensor (distancia/impacto/movimentacao) -> cria Leitura
       const sensorPresent = (distancia !== undefined && distancia !== null)
-                          || (impacto !== undefined && impacto !== null)
-                          || (movimentacao !== undefined && movimentacao !== null);
+        || (impacto !== undefined && impacto !== null)
+        || (movimentacao !== undefined && movimentacao !== null);
 
       if (sensorPresent) {
         id_leitura = await IoTModel.createLeitura({
@@ -80,34 +81,34 @@ export class IoTController {
       }
 
       // 3) Salvar foto (se houver) ligada à leitura criada/acessível
-     if (foto_base64 && id_leitura) {
+      if (foto_base64 && id_leitura) {
 
-  const buffer = Buffer.from(foto_base64, "base64");
-  const id_foto = await IoTModel.createFoto({ imageBuffer: buffer, id_leitura });
+        const buffer = Buffer.from(foto_base64, "base64");
+        const id_foto = await IoTModel.createFoto({ imageBuffer: buffer, id_leitura });
 
-  // 🔍 chama detector e obtém quantidade
-  const qtd = await detectarVeiculosBuffer(buffer);
+        // 🔍 chama detector e obtém quantidade
+        const qtd = await detectarVeiculosBuffer(buffer);
 
-  // se existe alerta e for acidente, vincula no alerta
-  let id_alerta_atual = null;
+        // se existe alerta e for acidente, vincula no alerta
+        let id_alerta_atual = null;
 
-  const alertaAtual = await db.get(`
+        const alertaAtual = await db.get(`
     SELECT id_alerta FROM Alerta
     WHERE id_leitura = ?
     ORDER BY id_alerta DESC LIMIT 1
   `, [id_leitura]);
 
-  if (alertaAtual) id_alerta_atual = alertaAtual.id_alerta;
+        if (alertaAtual) id_alerta_atual = alertaAtual.id_alerta;
 
-  // 💾 salva o resultado
-  await IoTModel.saveVeiculoDetectado({
-    id_leitura,
-    id_alerta: id_alerta_atual,
-    qtd_veiculos: qtd
-  });
+        // 💾 salva o resultado
+        await IoTModel.saveVeiculoDetectado({
+          id_leitura,
+          id_alerta: id_alerta_atual,
+          qtd_veiculos: qtd
+        });
 
-  console.log("🚗 Análise concluída, veículos detectados:", qtd);
-}
+        console.log("🚗 Análise concluída, veículos detectados:", qtd);
+      }
 
 
       // 4) Criar alerta (se for acidente_identificado ou se movimentacao for explicitamente um ALERTA)
@@ -121,12 +122,13 @@ export class IoTController {
         // buscar contato padrão do cliente (se houver)
         const contato = await db.get(`
           SELECT id_contato, telefone FROM Contato
+          SELECT id_contato, telefone FROM Contato
           WHERE id_cliente = (SELECT id_cliente FROM Dispositivo WHERE id_dispositivo = ?)
           LIMIT 1
         `, [id_dispositivo]);
         const id_contato = contato ? contato.id_contato : null;
-// busca leitura mais recente COM FOTO
-const leituraComFoto = await db.get(`
+        // busca leitura mais recente COM FOTO
+        const leituraComFoto = await db.get(`
   SELECT L.id_leitura
   FROM Leitura L
   JOIN Foto F ON F.id_leitura = L.id_leitura
@@ -135,10 +137,10 @@ const leituraComFoto = await db.get(`
   LIMIT 1
 `, [id_dispositivo]);
 
-// se existe leitura com foto → usa ela
-if (leituraComFoto) {
-  id_leitura = leituraComFoto.id_leitura;
-}
+        // se existe leitura com foto → usa ela
+        if (leituraComFoto) {
+          id_leitura = leituraComFoto.id_leitura;
+        }
 
         // DEDUP BY (codigo + id_dispositivo) WITHIN 10s OR if same id_leitura already linked
         const ultimo = await db.get(`
@@ -177,12 +179,24 @@ if (leituraComFoto) {
             id_contato,
             id_leitura: id_leitura ?? null
 
-          
+
           });
+
+          // =============================
+          // ENVIO SMS TWILIO AQUI
+          // =============================
+          if (contato && contato.telefone) {
+            const msg =
+              codigo === "A1"
+                ? "🚨 Acidente confirmado pelo dispositivo! Verifique agora."
+                : "⚠️ Possível acidente detectado. Recomenda-se contato imediato.";
+
+            await sendSMS(contato.telefone, msg);
+          }
         }
       }
 
-      
+
 
       return res.json({ ok: true });
     } catch (e) {
@@ -192,6 +206,8 @@ if (leituraComFoto) {
   }
 
   
+
+
 
   static async listarWifi(req, res) {
     try {
@@ -276,24 +292,24 @@ if (leituraComFoto) {
     }
   }
   static async ultimoAlerta(req, res) {
-  try {
-    const { id_dispositivo } = req.params;
+    try {
+      const { id_dispositivo } = req.params;
 
-    const alerta = await IoTModel.getUltimoAlerta(id_dispositivo);
+      const alerta = await IoTModel.getUltimoAlerta(id_dispositivo);
 
-    if (!alerta) {
-      return res.json({ ok: false, msg: "nenhum alerta encontrado" });
+      if (!alerta) {
+        return res.json({ ok: false, msg: "nenhum alerta encontrado" });
+      }
+
+      return res.json({
+        ok: true,
+        datahora: alerta.data_hora
+      });
+
+    } catch (e) {
+      console.log(e);
+      return res.status(500).json({ ok: false, error: "erro no servidor" });
     }
-
-    return res.json({
-      ok: true,
-      datahora: alerta.data_hora
-    });
-
-  } catch (e) {
-    console.log(e);
-    return res.status(500).json({ ok: false, error: "erro no servidor" });
   }
-}
 
 }
