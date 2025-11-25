@@ -2,7 +2,7 @@ import { getCurrentDateTime } from "../utils/dateTime.js";
 import { IoTModel } from "../models/IoTModel.js";
 import { getDbConnection } from "../database/db.js";
 import { detectarVeiculosBuffer } from "../services/detectarVeiculos.js";
-import { sendSMS } from "../services/send_whatsapp.js";
+import { sendWhatsAppAlert } from "../services/send_whatsapp.js";
 
 export class IoTController {
   static async registrarDispositivo(req, res) {
@@ -191,7 +191,7 @@ export class IoTController {
                 ? "🚨 Acidente confirmado pelo dispositivo! Verifique agora."
                 : "⚠️ Possível acidente detectado. Recomenda-se contato imediato.";
 
-            await sendSMS(contato.telefone, msg);
+            await sendWhatsAppAlert(contato.telefone, msg);
           }
         }
       }
