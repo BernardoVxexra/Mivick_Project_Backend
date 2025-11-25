@@ -1,7 +1,8 @@
 import axios from "axios";
 
 export async function detectarVeiculosBuffer(imageBuffer) {
-  const orangePiURL = "http://192.168.1.22:5000/detect";
+    const orangePiURL = "http://10.116.216.246:5000/detect";
+
 
   const MAX_RETRY = 3; // tenta até 3 vezes
   const TIMEOUT = 3000; // 3 segundos
@@ -74,6 +75,9 @@ def detect():
 
 app.run(host="0.0.0.0", port=5000)
 */
+
+
+
 
 /* rodar o cod de detecção na inicialização do orange pi
 
