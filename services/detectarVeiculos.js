@@ -1,11 +1,11 @@
 import axios from "axios";
 
 export async function detectarVeiculosBuffer(imageBuffer) {
-    const orangePiURL = "http://10.116.216.246:5000/detect";
+    const orangePiURL = "http://192.168.1.8:5000/detect";
 
 
   const MAX_RETRY = 3; // tenta até 3 vezes
-  const TIMEOUT = 3000; // 3 segundos
+  const TIMEOUT = 150000; // 3 segundos
 
   for (let tentativa = 1; tentativa <= MAX_RETRY; tentativa++) {
     try {

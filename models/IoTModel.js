@@ -86,15 +86,7 @@ static async createFoto({ imageBuffer, id_leitura }) {
     return res.lastID;
   }
 
- // Criar alerta
-static async createAlerta({ descricao, codigo, id_contato }) {
-  const db = await getDbConnection();
-  await db.run(
-    `INSERT INTO Alerta (descricao, codigo, id_contato)
-     VALUES (?, ?, ?)`,
-    [descricao, codigo, id_contato]
-  );
-}
+ 
 
 // Buscar contatos de um cliente
 static async getContatosByCliente(id_cliente) {

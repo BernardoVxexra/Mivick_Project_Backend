@@ -84,7 +84,12 @@ export class IoTController {
       if (foto_base64 && id_leitura) {
 
         const buffer = Buffer.from(foto_base64, "base64");
-        const id_foto = await IoTModel.createFoto({ imageBuffer: buffer, id_leitura });
+try {
+  const id_foto = await IoTModel.createFoto({ imageBuffer: buffer, id_leitura });
+  console.log("Foto salva id:", id_foto);
+} catch (err) {
+  console.error("Erro ao salvar foto:", err);
+}
 
         // 🔍 chama detector e obtém quantidade
         const qtd = await detectarVeiculosBuffer(buffer);
@@ -121,7 +126,6 @@ export class IoTController {
 
         // buscar contato padrão do cliente (se houver)
         const contato = await db.get(`
-          SELECT id_contato, telefone FROM Contato
           SELECT id_contato, telefone FROM Contato
           WHERE id_cliente = (SELECT id_cliente FROM Dispositivo WHERE id_dispositivo = ?)
           LIMIT 1
