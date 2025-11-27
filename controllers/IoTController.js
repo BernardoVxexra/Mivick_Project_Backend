@@ -193,11 +193,11 @@ export class IoTController {
             let msg;
 
             if (codigo === "A1") {
-              msg = "🚨 Acidente confirmado pelo dispositivo! Verifique agora.";
+              msg = "Acidente confirmado pelo dispositivo! Verifique agora.";
             } else if (codigo === "P1") {
-              msg = "⚠️ Possível acidente detectado. Recomenda-se contato imediato.";
+              msg = " Possível acidente detectado. Recomenda-se contato imediato.";
             } else {
-              msg = "ℹ️ Alerta desconhecido recebido.";
+              msg = "ℹAlerta desconhecido recebido.";
             }
 
             await sendWhatsAppAlert(contato.telefone, msg);

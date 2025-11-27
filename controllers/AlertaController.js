@@ -1,45 +1,46 @@
-// controllers/AlertaController.js
-import { IoTModel } from "../models/IoTModel.js";
-import { sendWhatsAppAlert } from "../services/send_whatsapp.js";
 import { getDbConnection } from "../database/db.js";
+import whatsappClient from "../whatsapp/whatsappClient.js";
 
 export class AlertaController {
   static async enviarAlerta(req, res) {
     try {
-      const { id_dispositivo, descricao, codigo } = req.body;
-      if (!id_dispositivo || !descricao) {
-        return res.status(400).json({ error: "id_dispositivo e descricao são obrigatórios" });
-      }
+      const { tipo, intensidade, latitude, longitude } = req.body;
+      const id_cliente = req.user.id_cliente;
 
       const db = await getDbConnection();
 
-      // Pega o cliente do dispositivo
-      const dispositivo = await db.get(
-        `SELECT id_cliente FROM Dispositivo WHERE id_dispositivo = ?`,
-        [id_dispositivo]
+      // 1️⃣ Registrar alerta no banco (SQLite usa .run)
+      await db.run(
+        "INSERT INTO Alerta (id_cliente, tipo, intensidade, latitude, longitude) VALUES (?, ?, ?, ?, ?)",
+        [id_cliente, tipo, intensidade, latitude, longitude]
       );
-      if (!dispositivo) return res.status(404).json({ error: "Dispositivo não encontrado" });
 
-      // Pega todos os contatos do cliente
-      const contatos = await IoTModel.getContatosByCliente(dispositivo.id_cliente);
+      // 2️⃣ Buscar contatos vinculados ao cliente (SQLite usa .all)
+      const contatos = await db.all(
+        "SELECT nome, telefone FROM Contato WHERE id_cliente = ?",
+        [id_cliente]
+      );
 
-      // Cria alerta para cada contato e envia via Twilio
+      // 3️⃣ Mensagem de alerta
+      const msg = `🚨 *ALERTA DE ACIDENTE DETECTADO*\n\n` +
+                  `Tipo: ${tipo}\n` +
+                  `Intensidade: ${intensidade}\n` +
+                  `Localização: https://maps.google.com/?q=${latitude},${longitude}\n\n` +
+                  `Envio automático pelo sistema Mivick.`;
+
+      // 4️⃣ Enviar via WhatsApp
       for (const contato of contatos) {
-        await IoTModel.createAlerta({ descricao, codigo, id_contato: contato.id_contato });
-        await sendWhatsAppAlert(contato.telefone, {
-         id_dispositivo,
-         descricao,
-         dispositivo: contato.nome_dispositivo,
-         distancia: contato.distancia,
-         impacto: contato.impacto,
-         movimentacao: contato.movimentacao
-        });
+        await whatsappClient.sendMessage(
+          contato.telefone.replace(/\D/g, "") + "@c.us",
+          msg
+        );
       }
 
-      return res.json({ success: true, message: "Alerta enviado para todos os contatos!" });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ error: "Erro ao enviar alerta" });
+      res.json({ ok: true, message: "Alerta criado e enviado via WhatsApp." });
+
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Erro ao enviar alerta." });
     }
   }
 }
