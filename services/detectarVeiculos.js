@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export async function detectarVeiculosBuffer(imageBuffer) {
-    const orangePiURL = "http://192.168.1.8:5000/detect";
+    const orangePiURL = "http://10.135.37.246:5000/detect";
 
 
   const MAX_RETRY = 3; // tenta até 3 vezes
