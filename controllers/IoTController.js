@@ -84,12 +84,12 @@ export class IoTController {
       if (foto_base64 && id_leitura) {
 
         const buffer = Buffer.from(foto_base64, "base64");
-try {
-  const id_foto = await IoTModel.createFoto({ imageBuffer: buffer, id_leitura });
-  console.log("Foto salva id:", id_foto);
-} catch (err) {
-  console.error("Erro ao salvar foto:", err);
-}
+        try {
+          const id_foto = await IoTModel.createFoto({ imageBuffer: buffer, id_leitura });
+          console.log("Foto salva id:", id_foto);
+        } catch (err) {
+          console.error("Erro ao salvar foto:", err);
+        }
 
         // 🔍 chama detector e obtém quantidade
         const qtd = await detectarVeiculosBuffer(buffer);
@@ -190,13 +190,19 @@ try {
           // ENVIO SMS TWILIO AQUI
           // =============================
           if (contato && contato.telefone) {
-            const msg =
-              codigo === "A1"
-                ? "🚨 Acidente confirmado pelo dispositivo! Verifique agora."
-                : "⚠️ Possível acidente detectado. Recomenda-se contato imediato.";
+            let msg;
+
+            if (codigo === "A1") {
+              msg = "🚨 Acidente confirmado pelo dispositivo! Verifique agora.";
+            } else if (codigo === "P1") {
+              msg = "⚠️ Possível acidente detectado. Recomenda-se contato imediato.";
+            } else {
+              msg = "ℹ️ Alerta desconhecido recebido.";
+            }
 
             await sendWhatsAppAlert(contato.telefone, msg);
           }
+
         }
       }
 
@@ -209,7 +215,7 @@ try {
     }
   }
 
-  
+
 
 
 
