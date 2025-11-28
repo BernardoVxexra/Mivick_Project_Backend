@@ -1,21 +1,38 @@
-2025/11/27-18:38:39.369 1044 Reusing MANIFEST D:\3 ano\Mivick_Project_Backend\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
-2025/11/27-18:38:39.370 1044 Recovering log #113
-2025/11/27-18:38:39.538 1044 Reusing old log D:\3 ano\Mivick_Project_Backend\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/000113.log 
-2025/11/27-18:38:42.618 88c Level-0 table #122: started
-2025/11/27-18:38:42.734 88c Level-0 table #122: 60750 bytes OK
-2025/11/27-18:38:42.747 88c Delete type=0 #113
-2025/11/27-18:38:42.763 88c Manual compaction at level-0 from '\x00\x1b\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x1c\x00\x00\x00' @ 0 : 0; will stop at (end)
-2025/11/27-18:38:46.594 1044 Compacting 1@1 + 5@2 files
-2025/11/27-18:38:47.493 1044 Generated table #123@1: 22239 keys, 2181841 bytes
-2025/11/27-18:38:48.364 1044 Generated table #124@1: 2662 keys, 2158390 bytes
-2025/11/27-18:38:48.844 1044 Generated table #125@1: 26785 keys, 2237198 bytes
-2025/11/27-18:38:49.331 1044 Generated table #126@1: 76324 keys, 2220519 bytes
-2025/11/27-18:38:49.437 1044 Generated table #127@1: 35035 keys, 761183 bytes
-2025/11/27-18:38:49.437 1044 Compacted 1@1 + 5@2 files => 9559131 bytes
-2025/11/27-18:38:49.448 1044 compacted to: files[ 0 0 5 0 0 0 0 ]
-2025/11/27-18:38:49.448 1044 Delete type=2 #115
-2025/11/27-18:38:49.449 1044 Delete type=2 #116
-2025/11/27-18:38:49.449 1044 Delete type=2 #117
-2025/11/27-18:38:49.449 1044 Delete type=2 #118
-2025/11/27-18:38:49.449 1044 Delete type=2 #119
-2025/11/27-18:38:49.449 1044 Delete type=2 #122
+2025/11/27-23:47:44.913 1fac Reusing MANIFEST D:\3 ano\Mivick_Project_Backend\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2025/11/27-23:47:45.161 1fac Recovering log #121
+2025/11/27-23:47:45.547 1fac Reusing old log D:\3 ano\Mivick_Project_Backend\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/000121.log 
+2025/11/27-23:47:54.850 1884 Level-0 table #130: started
+2025/11/27-23:47:54.951 1884 Level-0 table #130: 532848 bytes OK
+2025/11/27-23:47:54.996 1884 Delete type=0 #121
+2025/11/27-23:47:55.083 1884 Manual compaction at level-0 from '\x00\x1c\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x1d\x00\x00\x00' @ 0 : 0; will stop at (end)
+2025/11/27-23:47:59.284 1fac Compacting 1@1 + 5@2 files
+2025/11/27-23:48:00.077 1fac Generated table #131@1: 23721 keys, 2185666 bytes
+2025/11/27-23:48:00.753 1fac Generated table #132@1: 2651 keys, 2156636 bytes
+2025/11/27-23:48:01.281 1fac Generated table #133@1: 26923 keys, 2242330 bytes
+2025/11/27-23:48:01.634 1fac Generated table #134@1: 70482 keys, 2212516 bytes
+2025/11/27-23:48:01.828 1fac Generated table #135@1: 41808 keys, 907926 bytes
+2025/11/27-23:48:01.828 1fac Compacted 1@1 + 5@2 files => 9705074 bytes
+2025/11/27-23:48:01.829 1fac compacted to: files[ 0 0 5 0 0 0 0 ]
+2025/11/27-23:48:01.830 1fac Delete type=2 #123
+2025/11/27-23:48:01.830 1fac Delete type=2 #124
+2025/11/27-23:48:01.830 1fac Delete type=2 #125
+2025/11/27-23:48:01.830 1fac Delete type=2 #126
+2025/11/27-23:48:01.830 1fac Delete type=2 #127
+2025/11/27-23:48:01.830 1fac Delete type=2 #130
+2025/11/27-23:48:27.087 2680 Level-0 table #137: started
+2025/11/27-23:48:27.218 2680 Level-0 table #137: 1284733 bytes OK
+2025/11/27-23:48:27.219 2680 Delete type=0 #129
+2025/11/27-23:48:27.302 3a10 Compacting 1@1 + 5@2 files
+2025/11/27-23:48:27.685 3a10 Generated table #138@1: 24979 keys, 2188132 bytes
+2025/11/27-23:48:27.773 3a10 Generated table #139@1: 2643 keys, 2157132 bytes
+2025/11/27-23:48:28.083 3a10 Generated table #140@1: 26037 keys, 2243383 bytes
+2025/11/27-23:48:28.626 3a10 Generated table #141@1: 52408 keys, 2190168 bytes
+2025/11/27-23:48:28.770 3a10 Generated table #142@1: 63251 keys, 1373024 bytes
+2025/11/27-23:48:28.770 3a10 Compacted 1@1 + 5@2 files => 10151839 bytes
+2025/11/27-23:48:28.796 3a10 compacted to: files[ 0 0 5 0 0 0 0 ]
+2025/11/27-23:48:28.797 3a10 Delete type=2 #131
+2025/11/27-23:48:28.797 3a10 Delete type=2 #132
+2025/11/27-23:48:28.797 3a10 Delete type=2 #133
+2025/11/27-23:48:28.797 3a10 Delete type=2 #134
+2025/11/27-23:48:28.797 3a10 Delete type=2 #135
+2025/11/27-23:48:28.797 3a10 Delete type=2 #137
